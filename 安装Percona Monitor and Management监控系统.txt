@@ -32,16 +32,59 @@ $ docker create \
    $docker ps
    CONTAINER ID        IMAGE                      COMMAND                CREATED             STATUS              PORTS                           NAMES
    b4fd3beb8758        percona/pmm-server:1.2.0   "/opt/entrypoint.sh"   18 seconds ago      Up 17 seconds       443/tcp, 0.0.0.0:8080->80/tcp   pmm-server
-
+   访问http://ip:8080已经看到PMM服务端主机的监控Linux项的监控了
 5.安装被监控端
    yum install https://www.percona.com/redir/downloads/percona-release/redhat/percona-release-0.1-4.noarch.rpm
    yum install pmm-client
   连接到服务端
-   pmm-admin config --server 192.168.100.2
+   pmm-admin config --server 192.168.100.2:8080 #若上面没有更改端口，这里就不需要加`:8080`
+   输出如下：
+   $ sudo pmm-admin config --server 192.168.100.1
+   OK, PMM server is alive.
+
+   PMM Server      | 192.168.100.1
+   Client Name     | ubuntu-amd64
+   Client Address  | 192.168.200.1
+
+6.设置监控数据
+    使用`pmm-admin add --help`查看支持添加的监控项
+	输出如下：
+	
+    Available Commands:
+    mysql            Add complete monitoring for MySQL instance (linux and mysql metrics, queries).
+    linux:metrics    Add this system to metrics monitoring.
+    mysql:metrics    Add MySQL instance to metrics monitoring.
+    mysql:queries    Add MySQL instance to Query Analytics.
+    mongodb          Add complete monitoring for MongoDB instance (linux and mongodb metrics).
+    mongodb:metrics  Add MongoDB instance to metrics monitoring.
+    mongodb:queries  Add MongoDB instance to Query Analytics.
+    proxysql:metrics Add ProxySQL instance to metrics monitoring.
+
+    监控项比较齐全包含了Linux本身的监控，MySQL数据与查询统计，MongoDB数据与查询统计，ProxySQL数据
+	增加MySQL全部监控：
+	 pmm-admin add mysql --user zabbix --password zabbix --host 127.0.0.1 --port 3306
+	增加mongodb全部监控
+	 pmm-admin add mongodb
 	 
-
-
-
+7.查看本机已经开启的数据收集
+     pmm-admin list
+	输出如下
+	pmm-admin 1.2.0
+	PMM Server      | 192.168.100.228:8080 
+	Client Name     | monitor
+	Client Address  | 192.168.100.135 
+	Service Manager | unix-systemv
+	-------------- -------- ----------- -------- ------------------------------- ------------------------------------------
+	SERVICE TYPE   NAME     LOCAL PORT  RUNNING  DATA SOURCE                     OPTIONS                                   
+	-------------- -------- ----------- -------- ------------------------------- ------------------------------------------
+	mysql:queries  monitor  -           YES      zabbix:***@tcp(127.0.0.1:3306)  query_source=slowlog, query_examples=true 
+	linux:metrics  monitor  42000       YES      -                                                                         
+	mysql:metrics  monitor  42002       YES      zabbix:***@tcp(127.0.0.1:3306)     
+8.访问服务端web地址，已经可以看到图形了	
+  
+	
+   
+	 
 
 
 
