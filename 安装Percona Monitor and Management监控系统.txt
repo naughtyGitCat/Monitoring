@@ -1,0 +1,31 @@
+1.安装docker环境
+yum install docker 
+service docker start 
+2.创建数据容器： 
+$ docker create -v /opt/prometheus/data  -v /opt/consul-data  -v /var/lib/mysql  -v /var/lib/grafana   --name pmm-data   percona/pmm-server:1.2.0 /bin/true
+#有可能网络中断，多次重试就可以
+3.
+
+
+
+
+
+
+
+
+##docker中，数据持久化是个问题，可以考虑在外面定期对内部数据库进行xtrabackup 
+##docker常见操作命令：
+docker ps                       #查看当前运行的容器
+docker ps -a                    #查看所有的容器
+docker start name或ID           #启动之前停止的容器
+docker stop  name或ID           #停止容器
+docker kill  name或ID           #强制停止容器
+docker rm    name或ID           #删除容器
+
+##将docker内部的时间与宿主机时间同步
+docker cp /etc/localtime [name或ID]:/etc/localtime
+
+##进入docker容器
+docker exec -it [name或ID] /bin/sh
+             -i 交互
+			 -t tty
