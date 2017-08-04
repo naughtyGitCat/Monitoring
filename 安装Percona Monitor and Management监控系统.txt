@@ -82,7 +82,8 @@ $ docker create \
 	mysql:metrics  monitor  42002       YES      zabbix:***@tcp(127.0.0.1:3306)     
 8.访问服务端web地址，已经可以看到图形了	
   
-	
+9.修改grafana配置，修改匿名用户权限为viewer
+    	/usr/sbin/grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini cfg:default.paths.data=/var/lib/grafana cfg:default.paths.logs=/var/log/grafana cfg:default.paths.plugins=/var/lib/grafana/plugins cfg:default.server.root_url=%(protocol)s://%(domain)s:%(http_port)s/graph ENV_AUTH_BASIC
    
 	 
 
