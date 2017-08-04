@@ -2,9 +2,43 @@
 yum install docker 
 service docker start 
 2.创建数据容器： 
-$ docker create -v /opt/prometheus/data  -v /opt/consul-data  -v /var/lib/mysql  -v /var/lib/grafana   --name pmm-data   percona/pmm-server:1.2.0 /bin/true
-#有可能网络中断，多次重试就可以
-3.
+$ docker create \
+   -v /opt/prometheus/data \ #各个模块在容器内的存放地址
+   -v /opt/consul-data \     #各个模块在容器内的存放地址
+   -v /var/lib/mysql \       #各个模块在容器内的存放地址
+   -v /var/lib/grafana \     #各个模块在容器内的存放地址
+   --name pmm-data \   #容器名
+   percona/pmm-server:1.2.0 /bin/true #指定docker源和版本地址并设置退出码为0
+    ##有可能网速很慢，需要配置国内加速桥
+    ##打开这个网址https://www.daocloud.io/mirror#accelerator-doc，注册完后，刷新此页面，复制加速脚本如下：
+    ##curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://cccccccc.m.daocloud.io #每个人的地址都不同。
+    ##在CentOS下面进行执行。但是脚本好像有点毛病
+    ##vim /etc/docker/daemon.json
+    ##{"registry-mirrors": ["http://c69bbf2c.m.daocloud.io"]，}##脚本执行后，删除这个逗号，重启下docker服务
+    ##systemctl restart docker
+    ###或
+    ##service docker restart
+    ##重新创建数据容器
+
+3.运行pmm容器
+   docker run -d \              #-d指定容器在后台执行
+     -p 8080:80 \               #-p将docker的80端口重定向到宿主机的8080端口
+     --volumes-from pmm-data \  #数据源
+     --name pmm-server \        #容器名
+     --restart always \         #容器如果意外退出，自动重启容器  
+     percona/pmm-server:1.2.0   #容器源
+	 
+4.运行`docker ps`查看容器
+   $docker ps
+   CONTAINER ID        IMAGE                      COMMAND                CREATED             STATUS              PORTS                           NAMES
+   b4fd3beb8758        percona/pmm-server:1.2.0   "/opt/entrypoint.sh"   18 seconds ago      Up 17 seconds       443/tcp, 0.0.0.0:8080->80/tcp   pmm-server
+
+5.安装被监控端
+   yum install https://www.percona.com/redir/downloads/percona-release/redhat/percona-release-0.1-4.noarch.rpm
+   yum install pmm-client
+  连接到服务端
+   pmm-admin config --server 192.168.100.2
+	 
 
 
 
