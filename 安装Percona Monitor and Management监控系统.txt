@@ -107,3 +107,21 @@ docker cp /etc/localtime [name或ID]:/etc/localtime
 docker exec -it [name或ID] /bin/sh
              -i 交互
 			 -t tty
+
+			 
+如果遇到创建容器提示iptables错误则：
+在宿主机执行：
+
+pkill docker 
+
+iptables -t nat -F 
+
+ifconfig docker0 down 
+
+yum -y install bridge-utils
+brctl delbr docker0 
+
+docker -d 
+
+systmctl restart docker
+重启docker服务
