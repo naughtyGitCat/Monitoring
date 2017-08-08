@@ -85,7 +85,12 @@ $ docker create \
 9.修改grafana配置，修改匿名用户权限为viewer
     	/usr/sbin/grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini cfg:default.paths.data=/var/lib/grafana cfg:default.paths.logs=/var/log/grafana cfg:default.paths.plugins=/var/lib/grafana/plugins cfg:default.server.root_url=%(protocol)s://%(domain)s:%(http_port)s/graph ENV_AUTH_BASIC
    
-	 
+10.自定义被监控端主机名
+    #先清理掉之前主机名的服务端缓存，否则会导致主机名重复
+	pmm-admin purge mysql:queries
+	pmm-admin linux:metrics
+	#更改主机名
+	pmm-admin config --client-name mysql-ip101-master	 
 
 
 
