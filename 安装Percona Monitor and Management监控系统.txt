@@ -1,7 +1,7 @@
 1.安装docker环境
-yum install docker 
-service docker start 
-2.创建数据容器： 
+yum install docker
+service docker start
+2.创建数据容器：
 $ docker create \
    -v /opt/prometheus/data \ #各个模块在容器内的存放地址
    -v /opt/consul-data \     #各个模块在容器内的存放地址
@@ -25,9 +25,9 @@ $ docker create \
      -p 8080:80 \               #-p将docker的80端口重定向到宿主机的8080端口
      --volumes-from pmm-data \  #数据源
      --name pmm-server \        #容器名
-     --restart always \         #容器如果意外退出，自动重启容器  
+     --restart always \         #容器如果意外退出，自动重启容器
      percona/pmm-server:1.2.0   #容器源
-	 
+
 4.运行`docker ps`查看容器
    $docker ps
    CONTAINER ID        IMAGE                      COMMAND                CREATED             STATUS              PORTS                           NAMES
@@ -49,7 +49,7 @@ $ docker create \
 6.设置监控数据
     使用`pmm-admin add --help`查看支持添加的监控项
 	输出如下：
-	
+
     Available Commands:
     mysql            Add complete monitoring for MySQL instance (linux and mysql metrics, queries).
     linux:metrics    Add this system to metrics monitoring.
@@ -64,39 +64,39 @@ $ docker create \
 	增加MySQL全部监控：
 	 pmm-admin add mysql --user zabbix --password zabbix --host 127.0.0.1 --port 3306
 	增加mongodb全部监控
-	 pmm-admin add mongodb --uri mongodb://root:123456@192.168.1.1:27017/admin
-	 
+	 pmm-admin add mongodb --uri mongodb://root:123456@192.168.1.1:27017/admin?authMechanism=SCRAM-SHA-1
+
 7.查看本机已经开启的数据收集
      pmm-admin list
 	输出如下
 	pmm-admin 1.2.0
-	PMM Server      | 192.168.100.228:8080 
+	PMM Server      | 192.168.100.228:8080
 	Client Name     | monitor
-	Client Address  | 192.168.100.135 
+	Client Address  | 192.168.100.135
 	Service Manager | unix-systemv
 	-------------- -------- ----------- -------- ------------------------------- ------------------------------------------
-	SERVICE TYPE   NAME     LOCAL PORT  RUNNING  DATA SOURCE                     OPTIONS                                   
+	SERVICE TYPE   NAME     LOCAL PORT  RUNNING  DATA SOURCE                     OPTIONS
 	-------------- -------- ----------- -------- ------------------------------- ------------------------------------------
-	mysql:queries  monitor  -           YES      zabbix:***@tcp(127.0.0.1:3306)  query_source=slowlog, query_examples=true 
-	linux:metrics  monitor  42000       YES      -                                                                         
-	mysql:metrics  monitor  42002       YES      zabbix:***@tcp(127.0.0.1:3306)     
-8.访问服务端web地址，已经可以看到图形了	
-  
+	mysql:queries  monitor  -           YES      zabbix:***@tcp(127.0.0.1:3306)  query_source=slowlog, query_examples=true
+	linux:metrics  monitor  42000       YES      -
+	mysql:metrics  monitor  42002       YES      zabbix:***@tcp(127.0.0.1:3306)
+8.访问服务端web地址，已经可以看到图形了
+
 9.修改grafana配置，修改匿名用户权限为viewer
     	/usr/sbin/grafana-server --homepath=/usr/share/grafana --config=/etc/grafana/grafana.ini cfg:default.paths.data=/var/lib/grafana cfg:default.paths.logs=/var/log/grafana cfg:default.paths.plugins=/var/lib/grafana/plugins cfg:default.server.root_url=%(protocol)s://%(domain)s:%(http_port)s/graph ENV_AUTH_BASIC
-   
+
 10.自定义被监控端主机名
     #先清理掉之前主机名的服务端缓存，否则会导致主机名重复
 	pmm-admin purge mysql:queries
 	pmm-admin linux:metrics
 	#更改主机名
-	pmm-admin config --client-name mysql-ip101-master	 
+	pmm-admin config --client-name mysql-ip101-master
 
 
 
 
 
-##docker中，数据持久化是个问题，可以考虑在外面定期对内部数据库进行xtrabackup 
+##docker中，数据持久化是个问题，可以考虑在外面定期对内部数据库进行xtrabackup
 ##docker常见操作命令：
 docker ps                       #查看当前运行的容器
 docker ps -a                    #查看所有的容器
@@ -113,20 +113,20 @@ docker exec -it [name或ID] /bin/sh
              -i 交互
 			 -t tty
 
-			 
+
 如果遇到创建容器提示iptables错误则：
 在宿主机执行：
 
-pkill docker 
+pkill docker
 
-iptables -t nat -F 
+iptables -t nat -F
 
-ifconfig docker0 down 
+ifconfig docker0 down
 
 yum -y install bridge-utils
-brctl delbr docker0 
+brctl delbr docker0
 
-docker -d 
+docker -d
 
 systmctl restart docker
 重启docker服务
