@@ -64,7 +64,7 @@ $ docker create \
 	增加MySQL全部监控：
 	 pmm-admin add mysql --user zabbix --password zabbix --host 127.0.0.1 --port 3306
 	增加mongodb全部监控
-	 pmm-admin add mongodb --uri mongodb://root:123456@192.168.1.1:27017/admin?authMechanism=SCRAM-SHA-1
+	 pmm-admin add mongodb --uri mongodb://root:123456@192.168.1.1:27017/?authSource=admin&authMechanism=SCRAM-SHA-1
 
 7.查看本机已经开启的数据收集
      pmm-admin list
