@@ -1,0 +1,5 @@
+pmm-admin config --server 192.168.100.228                       #配置服务端
+pmm-admin config --client-name YW-MySQL-100028          #更改客户端主机名
+pmm-admin repair                                                               #修复之前连接其他服务器的遗留
+pmm-admin add mysql --user=root --password=123456 --host=localhost     #增加MySQL所有监控项
+pmm-admin add mongodb --uri mongodb://192.168.100.100                             #增加mongoDB所有监控项   
